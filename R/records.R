@@ -144,3 +144,24 @@ build_concept_map <- function(records) {
   }
   map
 }
+
+#' Map version record ids to concept record ids
+#'
+#' @param records List of Zenodo records.
+#' @return Named character vector mapping record id to concept id.
+build_version_to_concept_map <- function(records) {
+  records <- sanitize_records(records)
+  map <- character(0)
+  for (rec in records) {
+    rid <- as.character(rec$id %||% "")
+    if (rid == "") {
+      next
+    }
+    cid <- rec$conceptrecid %||% zenodo_id_from_identifier(rec$metadata$conceptdoi %||% "")
+    if (is.null(cid) || is.na(cid) || cid == "") {
+      next
+    }
+    map[[rid]] <- as.character(cid)
+  }
+  map
+}

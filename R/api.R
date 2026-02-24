@@ -25,6 +25,9 @@ build_api_url <- function(query, community, size, page) {
     },
     character(1)
   )
+  if (length(encoded) == 0) {
+    return(zenodo_base)
+  }
   paste0(zenodo_base, "?", paste(encoded, collapse = "&"))
 }
 

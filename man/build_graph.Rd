@@ -12,7 +12,9 @@ build_graph(
   community_ids = NULL,
   community_only = FALSE,
   title_map = NULL,
-  concept_map = NULL
+  concept_map = NULL,
+  map_versioned_to_concept = FALSE,
+  version_to_concept_map = NULL
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ build_graph(
 \item{title_map}{Optional id to title map.}
 
 \item{concept_map}{Optional concept id to record id map.}
+
+\item{map_versioned_to_concept}{Logical; map versioned ids to concept ids.}
+
+\item{version_to_concept_map}{Optional map of record id to concept id.}
 }
 \value{
 List with `nodes` and `edges` data frames.

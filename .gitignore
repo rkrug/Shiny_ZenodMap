@@ -13,3 +13,4 @@ docs
 /.quarto/
 **/*.quarto_ipynb
 rsconnect/
+inst/zenodo_records_*.rds

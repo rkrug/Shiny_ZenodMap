@@ -14,6 +14,7 @@
 server <- function(input, output, session) {
   records_val <- shiny::reactiveVal(NULL)
   graph_trigger <- shiny::reactiveVal(0)
+  relation_selection_prev <- shiny::reactiveVal("All")
 
   shiny::observeEvent(input$fetch, {
     query <- build_query(input$query)
@@ -229,19 +230,37 @@ server <- function(input, output, session) {
       base_records <- sanitize_records(payload$records)
       community_ids <- vapply(base_records, function(rec) as.character(rec$id), character(1))
       concept_map <- build_concept_map(base_records)
-      rels <- extract_relations(records, community_ids, concept_map)
+      version_to_concept_map <- build_version_to_concept_map(base_records)
+      map_versioned_to_concept <- isTRUE(input$map_versioned_to_concept)
+      community_ids_graph <- community_ids
+      if (map_versioned_to_concept && length(version_to_concept_map) > 0) {
+        mapped_ids <- unname(version_to_concept_map[community_ids])
+        mapped_ids <- mapped_ids[!is.na(mapped_ids) & mapped_ids != ""]
+        community_ids_graph <- unique(c(community_ids_graph, mapped_ids))
+      }
+      rels <- extract_relations(
+        records,
+        community_ids_graph,
+        concept_map,
+        map_versioned_to_concept = map_versioned_to_concept,
+        version_to_concept_map = version_to_concept_map
+      )
       if (length(rels) == 0) {
-        rels <- extract_relations(records, NULL, concept_map)
+        rels <- extract_relations(
+          records,
+          NULL,
+          concept_map,
+          map_versioned_to_concept = map_versioned_to_concept,
+          version_to_concept_map = version_to_concept_map
+        )
       }
       rel_choices <- c("All", rels)
-      current <- shiny::isolate(input$relations)
-      if (is.null(current) || length(current) == 0) {
-        current <- "All"
-      }
-      current <- current[current %in% rel_choices]
-      if (length(current) == 0) {
-        current <- "All"
-      }
+      current <- resolve_relation_selection(
+        selected = shiny::isolate(input$relations),
+        available = rels,
+        previous = relation_selection_prev()
+      )
+      relation_selection_prev(current)
       shiny::updateCheckboxGroupInput(
         session,
         "relations",
@@ -254,15 +273,27 @@ server <- function(input, output, session) {
         rec$metadata$title %||% paste("Record", rec$id)
       }, character(1))
       names(title_map) <- vapply(records, function(rec) as.character(rec$id), character(1))
+      if (map_versioned_to_concept && length(version_to_concept_map) > 0) {
+        for (rec in records) {
+          rid <- as.character(rec$id)
+          cid <- unname(version_to_concept_map[rid])
+          if (is.null(cid) || is.na(cid) || cid == "" || cid %in% names(title_map)) {
+            next
+          }
+          title_map[[cid]] <- rec$metadata$title %||% paste("Concept", cid)
+        }
+      }
       graph <- build_graph(
         records,
         depth = as.integer(input$depth),
         max_expand = length(records),
-        allowed_relations = input$relations,
-        community_ids = community_ids,
+        allowed_relations = current,
+        community_ids = community_ids_graph,
         community_only = isTRUE(input$community_only),
         title_map = title_map,
-        concept_map = concept_map
+        concept_map = concept_map,
+        map_versioned_to_concept = map_versioned_to_concept,
+        version_to_concept_map = version_to_concept_map
       )
       total <- payload$total_hits %||% length(records)
       graph$status <- paste(
@@ -303,12 +334,25 @@ server <- function(input, output, session) {
       callback = DT::JS(
         "Shiny.addCustomMessageHandler('scrollToId', function(id) {",
         "  if (!id) { return; }",
-        "  var data = table.column(0).data().toArray();",
-        "  var idx = data.indexOf(id.toString());",
+        "  var idStr = id.toString();",
+        "  var data = table.column(0, {search:'applied', order:'applied'}).data().toArray();",
+        "  var idx = data.findIndex(function(v) {",
+        "    return ((v === null || v === undefined) ? '' : v.toString()) === idStr;",
+        "  });",
         "  if (idx === -1) { return; }",
-        "  table.row(idx).select();",
-        "  var node = table.row(idx).node();",
-        "  if (node && node.scrollIntoView) { node.scrollIntoView({block: 'center'}); }",
+        "  var rowIndexes = table.rows({search:'applied', order:'applied'}).indexes().toArray();",
+        "  var rowIndex = rowIndexes[idx];",
+        "  if (rowIndex === undefined) { return; }",
+        "  var pageLen = table.page.len();",
+        "  var targetPage = pageLen > 0 ? Math.floor(idx / pageLen) : 0;",
+        "  table.one('draw', function() {",
+        "    table.row(rowIndex).select();",
+        "    var node = table.row(rowIndex).node();",
+        "    if (node && node.scrollIntoView) {",
+        "      node.scrollIntoView({block: 'start', behavior: 'smooth'});",
+        "    }",
+        "  });",
+        "  table.page(targetPage).draw('page');",
         "});"
       )
     )
@@ -326,6 +370,9 @@ server <- function(input, output, session) {
     if (length(idx) == 0) {
       DT::selectRows(proxy, NULL)
     } else {
+      page_len <- 10L
+      target_page <- max(1L, as.integer(ceiling(idx[1] / page_len)))
+      DT::selectPage(proxy, target_page)
       DT::selectRows(proxy, idx[1])
     }
     session$sendCustomMessage("scrollToId", as.character(id))

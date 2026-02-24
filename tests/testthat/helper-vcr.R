@@ -1,6 +1,6 @@
 if (requireNamespace("vcr", quietly = TRUE)) {
   vcr::vcr_configure(
-    dir = file.path("tests", "testthat", "_vcr"),
+    dir = testthat::test_path("_vcr"),
     filter_sensitive_data = list(
       "<ZENODO_TOKEN>" = Sys.getenv("ZENODO_TOKEN", unset = "")
     )
@@ -12,7 +12,7 @@ record_vcr_cassettes <- function() {
   if (!requireNamespace("vcr", quietly = TRUE)) {
     stop("Install vcr to record cassettes.")
   }
-  cassette_dir <- file.path("tests", "testthat", "_vcr")
+  cassette_dir <- testthat::test_path("_vcr")
   if (dir.exists(cassette_dir)) {
     unlink(list.files(cassette_dir, full.names = TRUE))
   }
@@ -31,7 +31,7 @@ record_vcr_cassettes <- function() {
   })
 
   vcr::use_cassette("zenodo-fetch", match_requests_on = c("uri"), {
-    fixture <- file.path("tests", "testthat", "fixtures", "zenodo_records_2026-01-07.rds")
+    fixture <- testthat::test_path("fixtures", "zenodo_records_2026-01-07.rds")
     if (!file.exists(fixture)) {
       stop("Fixture not found: ", fixture)
     }

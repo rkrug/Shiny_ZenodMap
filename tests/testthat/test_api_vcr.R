@@ -45,9 +45,9 @@ test_that("zenodo_fetch_record uses vcr cassette", {
     testthat::skip("Could not parse record id from cassette")
   }
 
-  # vcr::use_cassette("zenodo-fetch", match_requests_on = c("uri"), allow_playback_repeats = TRUE, {
-  #   rec <- zenodo_fetch_record(record_id)
-  #   expect_true(is.list(rec))
-  #   expect_true(!is.null(rec$id))
-  # })
+  vcr::use_cassette("zenodo-fetch", match_requests_on = c("uri"), allow_playback_repeats = TRUE, {
+    rec <- zenodo_fetch_record(record_id)
+    expect_true(is.list(rec))
+    expect_equal(as.character(rec$id), record_id)
+  })
 })

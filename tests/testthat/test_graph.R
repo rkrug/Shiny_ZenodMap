@@ -82,3 +82,74 @@ test_that("build_graph expands with depth > 0 using mocked fetch", {
   expect_true(any(graph$nodes$id == "2"))
   expect_true(nrow(graph$edges) >= 1)
 })
+
+test_that("build_graph applies relation filter and group assignments", {
+  records <- list(
+    list(
+      id = 1,
+      metadata = list(
+        title = "Root",
+        related_identifiers = list(
+          list(identifier = "10.5281/zenodo.2", relation = "References"),
+          list(identifier = "10.5281/zenodo.3", relation = "Cites")
+        )
+      )
+    )
+  )
+
+  graph <- build_graph(
+    records = records,
+    depth = 0,
+    max_expand = 10,
+    allowed_relations = "References",
+    community_ids = "1",
+    community_only = FALSE,
+    title_map = c("1" = "Root"),
+    concept_map = list()
+  )
+
+  expect_equal(unique(graph$edges$label), "References")
+  expect_equal(graph$nodes$group[graph$nodes$id == "1"], "community")
+  expect_equal(graph$nodes$group[graph$nodes$id == "2"], "external")
+  expect_false(any(graph$nodes$id == "3"))
+})
+
+test_that("build_graph can map versioned DOI targets to concept ids", {
+  records <- list(
+    list(
+      id = 1,
+      conceptrecid = 10,
+      metadata = list(
+        title = "Root v1",
+        related_identifiers = list(
+          list(identifier = "10.5281/zenodo.2", relation = "References")
+        )
+      )
+    ),
+    list(
+      id = 2,
+      conceptrecid = 20,
+      metadata = list(
+        title = "Target v1",
+        related_identifiers = list()
+      )
+    )
+  )
+
+  graph <- build_graph(
+    records = records,
+    depth = 0,
+    max_expand = 10,
+    allowed_relations = "All",
+    community_ids = c("1", "2", "10", "20"),
+    community_only = FALSE,
+    title_map = c("1" = "Root v1", "2" = "Target v1", "20" = "Target concept"),
+    concept_map = c("20" = "2"),
+    map_versioned_to_concept = TRUE,
+    version_to_concept_map = c("1" = "10", "2" = "20")
+  )
+
+  expect_true(any(graph$nodes$id == "20"))
+  expect_false(any(graph$nodes$id == "2" & graph$nodes$label == "Zenodo 2"))
+  expect_true(any(graph$edges$to == "20"))
+})

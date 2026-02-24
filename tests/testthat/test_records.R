@@ -30,3 +30,15 @@ test_that("records_to_table returns expected columns", {
   expect_type(tbl$Title, "character")
 })
 
+test_that("build_version_to_concept_map maps record ids to concept ids", {
+  records <- list(
+    list(id = 10, conceptrecid = 100, metadata = list(title = "v1")),
+    list(id = 11, metadata = list(conceptdoi = "10.5281/zenodo.101", title = "v2")),
+    list(id = 12, metadata = list(title = "no concept"))
+  )
+
+  map <- build_version_to_concept_map(records)
+  expect_equal(unname(map[["10"]]), "100")
+  expect_equal(unname(map[["11"]]), "101")
+  expect_true(is.na(unname(map["12"])))
+})

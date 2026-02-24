@@ -8,6 +8,8 @@
 #' @param community_only Logical; keep only community-to-community links.
 #' @param title_map Optional id to title map.
 #' @param concept_map Optional concept id to record id map.
+#' @param map_versioned_to_concept Logical; map versioned ids to concept ids.
+#' @param version_to_concept_map Optional map of record id to concept id.
 #' @return List with `nodes` and `edges` data frames.
 build_graph <- function(
   records,
@@ -17,7 +19,9 @@ build_graph <- function(
   community_ids = NULL,
   community_only = FALSE,
   title_map = NULL,
-  concept_map = NULL
+  concept_map = NULL,
+  map_versioned_to_concept = FALSE,
+  version_to_concept_map = NULL
 ) {
   nodes <- list()
   edges <- list()
@@ -84,7 +88,14 @@ build_graph <- function(
         next
       }
       zenodo_id <- zenodo_id_from_identifier(ident)
-      if (!is.null(concept_map) && !is.na(zenodo_id) && zenodo_id %in% names(concept_map)) {
+      if (
+        map_versioned_to_concept &&
+          !is.null(version_to_concept_map) &&
+          !is.na(zenodo_id) &&
+          zenodo_id %in% names(version_to_concept_map)
+      ) {
+        zenodo_id <- version_to_concept_map[[zenodo_id]]
+      } else if (!is.null(concept_map) && !is.na(zenodo_id) && zenodo_id %in% names(concept_map)) {
         zenodo_id <- concept_map[[zenodo_id]]
       }
       if (!is.na(zenodo_id)) {

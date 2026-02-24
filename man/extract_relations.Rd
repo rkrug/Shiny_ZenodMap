@@ -4,7 +4,13 @@
 \alias{extract_relations}
 \title{Extract relation types present between community records}
 \usage{
-extract_relations(records, community_ids = NULL, concept_map = NULL)
+extract_relations(
+  records,
+  community_ids = NULL,
+  concept_map = NULL,
+  map_versioned_to_concept = FALSE,
+  version_to_concept_map = NULL
+)
 }
 \arguments{
 \item{records}{List of Zenodo records.}
@@ -12,6 +18,10 @@ extract_relations(records, community_ids = NULL, concept_map = NULL)
 \item{community_ids}{Character vector of community record ids.}
 
 \item{concept_map}{Optional map of concept id to record id.}
+
+\item{map_versioned_to_concept}{Logical; map versioned ids to concept ids.}
+
+\item{version_to_concept_map}{Optional map of record id to concept id.}
 }
 \value{
 Character vector of relation labels.
