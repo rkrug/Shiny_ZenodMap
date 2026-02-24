@@ -1,14 +1,17 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://rkrug.github.io/zenodoMap/404.html</loc></url>
+<url><loc>https://rkrug.github.io/zenodoMap/DEVELOPMENT.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/LICENSE-text.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/articles/app-guide.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/articles/index.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/authors.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/index.html</loc></url>
+<url><loc>https://rkrug.github.io/zenodoMap/news/index.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/build_api_url.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/build_concept_map.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/build_graph.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/build_query.html</loc></url>
+<url><loc>https://rkrug.github.io/zenodoMap/reference/build_version_to_concept_map.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/extract_doi.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/extract_relations.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/filter_by_keywords.html</loc></url>
@@ -18,6 +21,7 @@
 <url><loc>https://rkrug.github.io/zenodoMap/reference/normalize_keywords.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/normalize_records.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/records_to_table.html</loc></url>
+<url><loc>https://rkrug.github.io/zenodoMap/reference/resolve_relation_selection.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/run_app.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/sanitize_records.html</loc></url>
 <url><loc>https://rkrug.github.io/zenodoMap/reference/server.html</loc></url>

@@ -13,7 +13,9 @@ build_graph(
   community_ids = NULL,
   community_only = FALSE,
   title_map = NULL,
-  concept_map = NULL
+  concept_map = NULL,
+  map_versioned_to_concept = FALSE,
+  version_to_concept_map = NULL
 )
 ```
 
@@ -50,6 +52,14 @@ build_graph(
 - concept_map:
 
   Optional concept id to record id map.
+
+- map_versioned_to_concept:
+
+  Logical; map versioned ids to concept ids.
+
+- version_to_concept_map:
+
+  Optional map of record id to concept id.
 
 ## Value
 

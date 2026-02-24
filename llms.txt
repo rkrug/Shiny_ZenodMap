@@ -69,6 +69,8 @@ zenodoMap::run_app()
   : Build nodes and edges for the network graph
 - [`build_query()`](https://rkrug.github.io/zenodoMap/reference/build_query.md)
   : Build a Zenodo query string
+- [`build_version_to_concept_map()`](https://rkrug.github.io/zenodoMap/reference/build_version_to_concept_map.md)
+  : Map version record ids to concept record ids
 - [`extract_doi()`](https://rkrug.github.io/zenodoMap/reference/extract_doi.md)
   : Extract a DOI from identifier text
 - [`extract_relations()`](https://rkrug.github.io/zenodoMap/reference/extract_relations.md)
@@ -85,6 +87,8 @@ zenodoMap::run_app()
   : Normalize records to a list of record objects
 - [`records_to_table()`](https://rkrug.github.io/zenodoMap/reference/records_to_table.md)
   : Build a metadata table for display
+- [`resolve_relation_selection()`](https://rkrug.github.io/zenodoMap/reference/resolve_relation_selection.md)
+  : Resolve effective relation selection from UI state
 - [`run_app()`](https://rkrug.github.io/zenodoMap/reference/run_app.md)
   : Run the Zenodo network explorer app
 - [`sanitize_records()`](https://rkrug.github.io/zenodoMap/reference/sanitize_records.md)
